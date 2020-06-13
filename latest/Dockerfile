@@ -4,7 +4,7 @@
 # Once this image is built, you must upload it as mbagnall/openkm:latest
 #
 # docker build . -t mbagnall/openkm:latest
-# docker push mbagnall/openkm:image
+# docker push mbagnall/openkm:latest
 #
 
 FROM mbagnall/openkm:image
