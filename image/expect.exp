@@ -1,0 +1,7 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+spawn "/opt/run.sh"
+expect "Database" { send "h2\r" }
+expect "Start install process?" { send "y\r"}
+expect "XX THE END XX" { send "tail -f\r" }
