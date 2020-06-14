@@ -9,6 +9,9 @@
 
 FROM mbagnall/openkm:image
 
+COPY keas.war /root/keas.war
+COPY vocabulary-sample.zip /root/vocabulary-sample.zip
+COPY keas.properties /root/keas.properties
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 

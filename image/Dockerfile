@@ -28,6 +28,7 @@ RUN apt-get update -y && \
     openjdk-8-jdk \
     expect \
     coreutils \
+    unzip \
     vim
 
 RUN useradd openkm
@@ -42,9 +43,3 @@ RUN chmod +x run.sh expect.exp
 EXPOSE 8080
 
 CMD [ "./expect.exp" ]
-
-#RUN wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/kea-algorithm/kea-5.0_full.zip
-#RUN unzip kea-5.0_full.zip
-#RUN export KEAHOME=/root/kea-5.0_full
-#RUN export CLASSPATH=$CLASSPATH:$KEAHOME
-#RUN export CLASSPATH=$CLASSPATH:$KEAHOME/lib/*.jar
