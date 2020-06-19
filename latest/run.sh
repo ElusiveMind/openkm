@@ -13,9 +13,9 @@ cp /root/keas.war /opt/tomcat-8.5.34/webapps/keas.war
 cp /root/vocabulary-sample.zip /opt/tomcat-8.5.34/vocabulary-sample.zip
 cp /root/keas.properties /opt/tomcat-8.5.34/keas.properties
 cd /opt/tomcat-8.5.34
-unzip vocabulary-sample.zip
+unzip vocabulary-sample.zip > /dev/null 2&>1
 
 cd /opt/tomcat-8.5.34/bin
-./startup.sh
+./startup.sh > /dev/null 2&>1
 
 tail -f

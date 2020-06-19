@@ -17,9 +17,6 @@ LABEL maintainer="Michael R. Bagnall <mbagnall@flyingflip.com>"
 LABEL vendor="FlyingFlip Studios, LLC."
 LABEL version="6.3.9"
 
-
-RUN apt-get update -y
-
 RUN apt-get update -y && \
   apt-get install -y \
     tesseract-ocr \
