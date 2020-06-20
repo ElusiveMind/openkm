@@ -11,28 +11,24 @@
 # URL - The URL to OpenKM. Used to set up KEA.
 # DATABASE - The database selector. Options are:
 #   h2 - default
-#   mysql - connection to a MySQL server. Default is to
-#     use the one created on the docker container. If using
-#     the on-board MySQL server, it is recommended to mount
-#     the MySQL directory (/var/lib/mysql) to your file system
-#     If not default, must define:
+#   mysql - Connection details to a MySQL server. Must define:
 #       DATABASE_HOST - the host name of the database
 #       DATABASE_NAME - the name of the database
 #       DATABASE_USER - the user to connect to the database
 #       DATABASE_PASSWORD - the password for the user specified above.
-#   mariadb - same as MySQL
+#   mariadb - Same as MySQL
 #   oracle
 #   sqlserver
 #   postgresql
 #
-# example:
-# docker run -e URL=https://example.com -e DATABASE=mysql mbagnall/openkm:mysql
+# Example with tag:
+# docker run -e URL=https://okm.flyingflip.com -e DATABASE=mysql mbagnall/openkm:image
 #
 # Then you should commit the container if you wish to push to a
-# Docker repository such as DockerHub.
+# Docker repository such as DockerHub. An example of which is
 #
-# docker commit <container id> mbagnall/openkm:image
-# docker push mbagnall/openkm:image
+# docker commit <container id> mbagnall/openkm:<tag>
+# docker push mbagnall/openkm:<tag>
 #
 
 FROM ubuntu:xenial
@@ -41,8 +37,6 @@ LABEL name="OpenKM Base Container"
 LABEL maintainer="Michael R. Bagnall <mbagnall@flyingflip.com>"
 LABEL vendor="FlyingFlip Studios, LLC."
 LABEL version="6.3.9"
-
-RUN export DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update && \
   apt-get -q -y install\

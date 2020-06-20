@@ -1,17 +1,18 @@
 #!/bin/bash
 FILE="/opt/tomcat-8.5.34/repository/okmdb.mv.db"
+DB="/opt/tomcat-8.5.34/repository/datastore"
 
-if [ -f "$FILE" ];
+if [[ -f "$FILE" || -d "$DB" ]];
 then
-   echo "File $FILE exist. No setup required."
+   echo "No setup required."
    sed -i 's/hibernate.hbm2ddl=create/hibernate.hbm2ddl=none/g' /opt/tomcat-8.5.34/OpenKM.cfg
 else
-   echo "File $FILE does not exist. Begin setup."
+   echo "Begin setup."
 fi
 
 cp /root/keas.war /opt/tomcat-8.5.34/webapps/keas.war
 cp /root/vocabulary-sample.zip /opt/tomcat-8.5.34/vocabulary-sample.zip
-cp /root/keas.properties /opt/tomcat-8.5.34/keas.properties
+envsubst < /root/keas.properties > /opt/tomcat-8.5.34/keas.properties
 cd /opt/tomcat-8.5.34
 unzip vocabulary-sample.zip > /dev/null 2&>1
 

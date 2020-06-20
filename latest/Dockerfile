@@ -7,7 +7,7 @@
 # docker push mbagnall/openkm:latest
 #
 
-FROM mbagnall/openkm:image
+FROM mbagnall/openkm:mysql-image
 
 COPY keas.war /root/keas.war
 COPY vocabulary-sample.zip /root/vocabulary-sample.zip
