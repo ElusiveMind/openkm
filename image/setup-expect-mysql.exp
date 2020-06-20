@@ -1,0 +1,11 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+spawn "/opt/run.sh"
+expect "Database" { send "mysql\r" }
+expect "Database host" { send "$DATABASE_HOST\r" }
+expect "Database name" { send "$DATABASE_NAME\r" }
+expect "Database user" { send "$DATABASE_USER\r" }
+expect "Database password" { send "$DATABASE_PASSWORD\r" }
+expect "Start install process?" { send "y\r"}
+expect "XX THE END XX" { send "tail -f\r" }
