@@ -112,4 +112,3 @@ After these steps are completed, go to the URL of your OpenKM server and everyth
 
 **Username:** okmAdmin  
 **Password:** admin
-
