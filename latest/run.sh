@@ -1,4 +1,5 @@
 #!/bin/bash
+
 FILE="/opt/tomcat-8.5.34/repository/okmdb.mv.db"
 DB="/opt/tomcat-8.5.34/repository/datastore"
 
@@ -8,6 +9,18 @@ then
    sed -i 's/hibernate.hbm2ddl=create/hibernate.hbm2ddl=none/g' /opt/tomcat-8.5.34/OpenKM.cfg
 else
    echo "Begin setup."
+fi
+
+if [[ -n "${OPEN_KM_URL}" ]]; then
+  export OPEN_KM_URL="$OPEN_KM_URL"
+else
+  export OPEN_KM_URL="http://localhost:8080/OpenKM"
+fi
+
+if [[ -n "${OPEN_KM_BASE_URL}" ]]; then
+  export OPEN_KM_BASE_URL="$OPEN_KM_BASE_URL"
+else
+  export OPEN_KM_BASE_URL="http://localhost:8080"
 fi
 
 cp /root/keas.war /opt/tomcat-8.5.34/webapps/keas.war

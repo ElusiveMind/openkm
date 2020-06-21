@@ -1,13 +1,18 @@
 #
 # OpenKM Persistent
 #
-# Once this image is built, you must upload it as mbagnall/openkm:latest
+# You need to run this once for each base image and upload it for
+# it to work. Usually this is done once for each database base image
+# and named "base-<databse>",
 #
-# docker build . -t mbagnall/openkm:latest
-# docker push mbagnall/openkm:latest
+# Once this image is built, you must upload it as mbagnall/openkm:<tag>
+#
+# Example:
+# docker build . -t mbagnall/openkm:mysql
+# docker push mbagnall/openkm:mysql
 #
 
-FROM mbagnall/openkm:mysql-image
+FROM mbagnall/openkm:base-mysql
 
 COPY keas.war /root/keas.war
 COPY vocabulary-sample.zip /root/vocabulary-sample.zip

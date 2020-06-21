@@ -1,12 +1,5 @@
 #!/bin/bash
 
-if [[ -n "${URL}" ]]; then
-  export URL="$URL"
-else
-  export URL="http://localhost:8080"
-fi
-
-
 if [[ -n "${DATABASE}" ]]; then
   export DATABASE="$DATABASE"
 else

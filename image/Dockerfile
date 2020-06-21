@@ -7,8 +7,7 @@
 # docker build . -t mbagnall/openkm:image
 # docker run mbagnall/openkm:image
 #
-# Environment Variables
-# URL - The URL to OpenKM. Used to set up KEA.
+# Environment Variable
 # DATABASE - The database selector. Options are:
 #   h2 - default
 #   mysql - Connection details to a MySQL server. Must define:
@@ -22,7 +21,8 @@
 #   postgresql
 #
 # Example with tag:
-# docker run -e URL=https://okm.flyingflip.com -e DATABASE=mysql mbagnall/openkm:image
+# docker run -e DATABASE=mysql mbagnall/openkm
+# docker run mbagnall/openkm
 #
 # Then you should commit the container if you wish to push to a
 # Docker repository such as DockerHub. An example of which is
