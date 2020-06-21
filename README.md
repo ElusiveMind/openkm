@@ -1,5 +1,4 @@
-# OpenKM with KEA
-
+## OpenKM with KEA
 Last Updated: June 21, 2019
 
 This is an unofficial container that provides the OpenKM application with persistent data. It also provides Tesseract OCR support and the KEA and test environments.
@@ -15,7 +14,6 @@ To add document and account persistency, use the following. Note that you will n
 ---
 
 The default configuration above uses the default `h2` data storage method. OpenKM has the ability to additionally integrate with:
-
 - MySQL
 - MariaDB
 - Oracle
@@ -26,8 +24,7 @@ As of this README, `h2` abd `mysql` are supported.
 
 ---
 
-## Setting Up With MySQL
-
+### Setting Up With MySQL
 There is a sample repository with information regarding setting up your install with MySQL. You can view it [here](https://github.com/ElusiveMind/openkm_demo). It can be configured with Rancher or any other orchestration system you like. The example below comes from the demo and uses Docker Composer
 
 ```yml
@@ -71,9 +68,15 @@ services:
     restart: unless-stopped
 ```
 
----
+The init-file.sql looks like
 
-## A More Secure MySQL
+```sql
+CREATE DATABASE okmdb DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_bin;
+CREATE USER 'openkm'@'%' IDENTIFIED BY 'OpenKM77';
+```
+
+---
+### A More Secure MySQL
 
 If you would like to lock down your MySQL you can remove the `command:` line from the MySQL service and re-add the environment variables to create the default user. **At this time it is not supported to connect this OpenKM docker-based service to an existing/shared MySQL server.** If you need support for this, please contact me [here](mailto:mbagnall@flyingflip.com).
 
@@ -112,3 +115,4 @@ After these steps are completed, go to the URL of your OpenKM server and everyth
 
 **Username:** okmAdmin  
 **Password:** admin
+
