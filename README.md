@@ -26,7 +26,7 @@ As of this README, `h2` and `mysql` are supported.
 
 ---
 
-## Setting Up With MySQL
+### Setting Up With MySQL
 
 There is a sample repository with information regarding setting up your install with MySQL. You can view it [here](https://github.com/ElusiveMind/openkm_demo). It can be configured with Rancher or any other orchestration system you like. The example below comes from the demo and uses Docker Composer
 
@@ -70,9 +70,16 @@ services:
     restart: unless-stopped
 ```
 
+The init-file.sql looks like
+
+```sql
+CREATE DATABASE okmdb DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_bin;
+CREATE USER 'openkm'@'%' IDENTIFIED BY 'OpenKM77';
+```
+
 ---
 
-## A More Secure MySQL
+### A More Secure MySQL
 
 If you would like to lock down your MySQL you can remove the `command:` line from the MySQL service and re-add the environment variables to create the default user. **At this time it is not supported to connect this OpenKM docker-based service to an existing/shared MySQL server.** If you need support for this, please contact me [here](mailto:mbagnall@gmail.com).
 
