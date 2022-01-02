@@ -31,12 +31,12 @@
 # docker push mbagnall/openkm:<tag>
 #
 
-FROM ubuntu:xenial
+FROM ubuntu:focal
 
 LABEL name="OpenKM Base Container"
-LABEL maintainer="Michael R. Bagnall <mbagnall@flyingflip.com>"
+LABEL maintainer="Michael R. Bagnall <michael@bagnall.io>"
 LABEL vendor="FlyingFlip Studios, LLC."
-LABEL version="6.3.9"
+LABEL version="6.3.11"
 
 RUN apt-get -y update && \
   apt-get -q -y install\
