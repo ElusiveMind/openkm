@@ -36,19 +36,19 @@ FROM ubuntu:focal
 LABEL name="OpenKM Base Container"
 LABEL maintainer="Michael R. Bagnall <michael@bagnall.io>"
 LABEL vendor="FlyingFlip Studios, LLC."
-LABEL version="6.3.11"
+LABEL version="6.3.12"
 
 RUN apt-get -y update && \
   apt-get -q -y install\
-    tesseract-ocr \
-    tesseract-ocr-eng \
-    tesseract-ocr-osd \ 
-    openjdk-8-jdk \
-    expect \
-    coreutils \
-    unzip \
-    vim \
-    gettext
+  tesseract-ocr \
+  tesseract-ocr-eng \
+  tesseract-ocr-osd \ 
+  openjdk-8-jdk \
+  expect \
+  coreutils \
+  unzip \
+  vim \
+  gettext
 
 WORKDIR /opt
 
