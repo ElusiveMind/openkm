@@ -20,6 +20,6 @@ COPY keas.properties /root/keas.properties
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
-VOLUME ["/opt/tomcat-8.5.34/repository"]
+VOLUME ["/opt/tomcat-8.5.69/repository"]
 
 CMD ["/run.sh"]

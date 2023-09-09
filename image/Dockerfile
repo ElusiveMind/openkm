@@ -14,14 +14,14 @@
 #       DATABASE_HOST - the host name of the database
 #       DATABASE_NAME - the name of the database
 #       DATABASE_USER - the user to connect to the database
-#       DATABASE_PASSWORD - the password for the user specified above.
+#       DATABASE_PASS - the password for the user specified above.
 #   mariadb - Same as MySQL
 #   oracle
 #   sqlserver
 #   postgresql
 #
 # Example with tag:
-# docker run -e DATABASE=mysql mbagnall/openkm
+# docker run --env-file ./env.list mbagnall/openkm:image
 # docker run mbagnall/openkm
 #
 # Then you should commit the container if you wish to push to a
@@ -31,7 +31,7 @@
 # docker push mbagnall/openkm:<tag>
 #
 
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 LABEL name="OpenKM Base Container"
 LABEL maintainer="Michael R. Bagnall <michael@bagnall.io>"

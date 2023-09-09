@@ -1,16 +1,22 @@
 # OpenKM with KEA
 
-Last Updated: January 2, 2022
+Last Updated: September 9, 2023 (Using OpenKM 6.3.12)
 
-This is an unofficial container that provides the OpenKM application with persistent data. It also provides Tesseract OCR support and the KEA and test environments.
+This is an unofficial repository that provides the OpenKM application with persistent data. It also provides Tesseract OCR support and the KEA and test environments.
 
 To quickly pull and run the application, exectute the following:
 
-`docker run -p 8080:8080 mbagnall/openkm`
+`docker run -p 8080:8080 mbagnall/openkm:h2`
 
-To add document and account persistency, use the following. Note that you will need to use this command in order for the installation not to re-initializa on every container rebuild or update.
+And then go to:
 
-`docker run -p 8080:8080 -v./openkm-data:/opt/tomcat-8.5.34/repository mbagnall/openkm`
+`http://localhost:8080`
+
+Note that it may take some time to initially start up.
+
+To add document and account persistency, use the following. Note that you will need to use this command in order for the installation not to re-initialize on every container rebuild or update.
+
+`docker run -p 8080:8080 -v./openkm-data:/opt/tomcat-8.5.69/repository mbagnall/openkm:h2`
 
 ---
 
@@ -22,7 +28,7 @@ The default configuration above uses the default `h2` data storage method. OpenK
 - MSSQL
 - PostgreSQL
 
-As of this README, `h2` and `mysql` are supported.
+As of this README, `h2` and `mysql` are covered in the scope of this document.
 
 ---
 
@@ -46,7 +52,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./data:/opt/tomcat-8.5.34/repository
+      - ./data:/opt/tomcat-8.5.69/repository
     depends_on:
       - db
     restart: unless-stopped
