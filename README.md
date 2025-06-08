@@ -1,6 +1,6 @@
 # OpenKM with KEA
 
-Last Updated: September 9, 2023 (Using OpenKM 6.3.12)
+Last Updated: June 8, 2025
 
 This is an unofficial repository that provides the OpenKM application with persistent data. It also provides Tesseract OCR support and the KEA and test environments.
 

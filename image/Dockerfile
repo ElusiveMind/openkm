@@ -31,7 +31,7 @@
 # docker push mbagnall/openkm:<tag>
 #
 
-FROM ubuntu:jammy
+FROM ubuntu:24.04
 
 LABEL name="OpenKM Base Container"
 LABEL maintainer="Michael R. Bagnall <michael@bagnall.io>"
