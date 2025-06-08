@@ -37,7 +37,6 @@ As of this README, `h2` and `mysql` are covered in the scope of this document.
 There is a sample repository with information regarding setting up your install with MySQL. You can view it [here](https://github.com/ElusiveMind/openkm_demo). It can be configured with Rancher or any other orchestration system you like. The example below comes from the demo and uses Docker Composer
 
 ```yml
-version: "2"
 services:
   # Our base OpenKM service is at the localhost. If hosting these on a domain,
   # change the "localhost:8080" to your domain and optionally change the ports.
