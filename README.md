@@ -32,6 +32,35 @@ As of this README, `h2` and `mysql` are covered in the scope of this document.
 
 ---
 
+### Building The Image
+
+The image is built in a single step from the `image` folder. The OpenKM installer runs during the build (it downloads OpenKM from update.openkm.com, so the build needs network access), and then the KEA service and the runtime entrypoint are layered on top.
+
+Select the database backend with the `DATABASE` build argument. It defaults to `h2`:
+
+```bash
+cd image
+docker build . -t mbagnall/openkm:h2
+docker build . --build-arg DATABASE=mysql -t mbagnall/openkm:mysql
+```
+
+`DATABASE` accepts `h2`, `mysql`, `mariadb`, `oracle`, `sqlserver` or `postgresql`. For anything other than `h2`, the connection details are written into the image at build time and can be set with these build arguments:
+
+| Build argument      | Default   | Purpose                                  |
+| ------------------- | --------- | ---------------------------------------- |
+| `DATABASE_HOST`     | `db`      | Host name of the database server         |
+| `DATABASE_NAME`     | `okmdb`   | Database name (the SID for Oracle)       |
+| `DATABASE_USER`     | `openkm`  | User to connect as                       |
+| `DATABASE_PASSWORD` | `OpenKM77`| Password for that user                   |
+
+For example:
+
+```bash
+docker build . --build-arg DATABASE=postgresql --build-arg DATABASE_HOST=postgres -t mbagnall/openkm:postgresql
+```
+
+---
+
 ### Setting Up With MySQL
 
 There is a sample repository with information regarding setting up your install with MySQL. You can view it [here](https://github.com/ElusiveMind/openkm_demo). It can be configured with Rancher or any other orchestration system you like. The example below comes from the demo and uses Docker Composer

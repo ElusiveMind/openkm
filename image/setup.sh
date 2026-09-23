@@ -1,36 +1,39 @@
 #!/bin/bash
+#
+# Build-time installer driver. Runs OKMInstaller.jar through the expect
+# script that matches the selected DATABASE. Called from the Dockerfile.
+#
 
-if [[ -n "${DATABASE}" ]]; then
-  export DATABASE="$DATABASE"
-else
-  export DATABASE="h2"
+set -euo pipefail
+
+export DATABASE="${DATABASE:-h2}"
+
+case "$DATABASE" in
+  h2)
+    EXPECT_SCRIPT=/opt/setup-expect-h2.exp
+    ;;
+  mysql|mariadb|oracle|sqlserver|postgresql)
+    export DATABASE_HOST="${DATABASE_HOST:-db}"
+    export DATABASE_NAME="${DATABASE_NAME:-okmdb}"
+    export DATABASE_USER="${DATABASE_USER:-openkm}"
+    export DATABASE_PASSWORD="${DATABASE_PASSWORD:-OpenKM77}"
+    EXPECT_SCRIPT=/opt/setup-expect-server.exp
+    ;;
+  *)
+    echo "Unsupported DATABASE '$DATABASE'." >&2
+    echo "Use one of: h2, mysql, mariadb, oracle, sqlserver, postgresql" >&2
+    exit 1
+    ;;
+esac
+
+echo "Installing OpenKM with database backend: $DATABASE"
+
+cd /opt
+"$EXPECT_SCRIPT"
+
+if [[ ! -f /opt/tomcat-8.5.69/OpenKM.cfg ]]; then
+  echo "Installer finished but /opt/tomcat-8.5.69/OpenKM.cfg is missing." >&2
+  exit 1
 fi
 
-if [ $DATABASE = "mysql" ]; then
-  if [[ -n "${DATABASE_HOST}" ]]; then
-    export DATABASE_HOST="$DATABASE_HOST"
-  else
-    export DATABASE_HOST="db"
-  fi
-  if [[ -n "${DATABASE_NAME}" ]]; then
-    export DATABASE_NAME="$DATABASE_NAME"
-  else
-    export DATABASE_NAME=""
-  fi
-  if [[ -n "${DATABASE_USER}" ]]; then
-    export DATABASE_USER="$DATABASE_USER"
-  else
-    export DATABASE_USER=""
-  fi
-  if [[ -n "${DATABASE_PASSWORD}" ]]; then
-    export DATABASE_PASSWORD="$DATABASE_PASS"
-  else
-    export DATABASE_PASSWORD="OpenKM77"
-  fi
-  envsubst < /opt/setup-expect-mysql.exp > /opt/expect.exp
-else
-  envsubst < /opt/setup-expect-h2.exp > /opt/expect.exp
-fi
-
-chmod +x /opt/expect.exp
-/opt/expect.exp
+echo "OpenKM installed with database backend: $DATABASE"

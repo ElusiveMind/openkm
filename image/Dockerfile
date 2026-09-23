@@ -1,48 +1,50 @@
 #
 # OpenKM Persistent
 #
-# Once this image is built, you must run it and then commit the container
-# as mbagnall/openkm:image
+# Single-step build. The OpenKM installer runs during the build, then the
+# KEA keyword extraction service and the runtime entrypoint are layered on
+# top, so the resulting image is ready to push and run.
 #
-# docker build . -t mbagnall/openkm:image
-# docker run mbagnall/openkm:image
+# Pick the database backend with the DATABASE build argument:
 #
-# Environment Variable
-# DATABASE - The database selector. Options are:
-#   h2 - default
-#   mysql - Connection details to a MySQL server. Must define:
-#       DATABASE_HOST - the host name of the database
-#       DATABASE_NAME - the name of the database
-#       DATABASE_USER - the user to connect to the database
-#       DATABASE_PASS - the password for the user specified above.
-#   mariadb - Same as MySQL
-#   oracle
-#   sqlserver
-#   postgresql
+#   docker build . -t mbagnall/openkm:h2
+#   docker build . --build-arg DATABASE=mysql -t mbagnall/openkm:mysql
+#   docker push mbagnall/openkm:mysql
 #
-# Example with tag:
-# docker run --env-file ./env.list mbagnall/openkm:image
-# docker run mbagnall/openkm
+# Build arguments
+#   DATABASE - The database selector. Options are:
+#     h2 - default, embedded database stored in the repository volume
+#     mysql
+#     mariadb
+#     oracle
+#     sqlserver
+#     postgresql
 #
-# Then you should commit the container if you wish to push to a
-# Docker repository such as DockerHub. An example of which is
+#   For everything except h2 the connection details are written into the
+#   image at build time by the installer:
+#     DATABASE_HOST     - host name of the database server (default: db)
+#     DATABASE_NAME     - database name, or SID for oracle (default: okmdb)
+#     DATABASE_USER     - user to connect as (default: openkm)
+#     DATABASE_PASSWORD - password for that user (default: OpenKM77)
 #
-# docker commit <container id> mbagnall/openkm:<tag>
-# docker push mbagnall/openkm:<tag>
+# The installer downloads OpenKM from update.openkm.com, so the build
+# needs network access.
 #
 
 FROM ubuntu:24.04
 
-LABEL name="OpenKM Base Container"
-LABEL maintainer="Michael R. Bagnall <michael@bagnall.io>"
+LABEL name="OpenKM Persistent"
+LABEL maintainer="Michael R. Bagnall <hello@flyingflip.com>"
 LABEL vendor="FlyingFlip Studios, LLC."
 LABEL version="6.3.12"
 
+# The package lists are kept on purpose: the OpenKM installer runs apt-get
+# itself to add libreoffice, imagemagick, xvfb and friends.
 RUN apt-get -y update && \
-  apt-get -q -y install\
+  apt-get -q -y install \
   tesseract-ocr \
   tesseract-ocr-eng \
-  tesseract-ocr-osd \ 
+  tesseract-ocr-osd \
   openjdk-8-jdk \
   expect \
   coreutils \
@@ -54,13 +56,31 @@ WORKDIR /opt
 
 RUN useradd openkm
 
-COPY OKMInstaller.jar OKMInstaller.jar
-COPY setup-expect-mysql.exp setup-expect-mysql.exp
-COPY setup-expect-h2.exp setup-expect-h2.exp
-COPY setup.sh setup.sh
-COPY run.sh run.sh
-RUN chmod +x run.sh setup-expect-mysql.exp setup-expect-h2.exp setup.sh
+#
+# Step 1: run the OpenKM installer against the selected database.
+#
+ARG DATABASE=h2
+ARG DATABASE_HOST=db
+ARG DATABASE_NAME=okmdb
+ARG DATABASE_USER=openkm
+ARG DATABASE_PASSWORD=OpenKM77
+ENV DATABASE=${DATABASE}
+
+COPY OKMInstaller.jar setup.sh setup-expect-h2.exp setup-expect-server.exp /opt/
+RUN chmod +x /opt/setup.sh /opt/setup-expect-h2.exp /opt/setup-expect-server.exp && \
+  /opt/setup.sh
+
+#
+# Step 2: add KEA and the runtime entrypoint.
+#
+COPY keas.war /root/keas.war
+COPY vocabulary-sample.zip /root/vocabulary-sample.zip
+COPY keas.properties /root/keas.properties
+COPY run.sh /run.sh
+RUN chmod +x /run.sh
+
+VOLUME ["/opt/tomcat-8.5.69/repository"]
 
 EXPOSE 8080
 
-CMD [ "./setup.sh" ]
+CMD ["/run.sh"]
