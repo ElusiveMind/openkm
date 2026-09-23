@@ -1,17 +1,18 @@
 #!/usr/bin/expect -f
 #
-# Drives OKMInstaller.jar for an external database server:
-# mysql, mariadb, oracle, sqlserver or postgresql.
+# Drives OKMInstaller.jar for a database server: mysql, mariadb, oracle,
+# sqlserver or postgresql (the 7.0 installer offers nothing else).
 #
-# Connection details come from the environment (exported by setup.sh):
-#   DATABASE, DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD
+# Everything comes from the environment (exported by setup.sh):
+#   OPENKM_VERSION, DATABASE,
+#   DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD
 #
 
 # The installer downloads OpenKM and installs packages, so allow plenty
 # of time per prompt.
 set timeout 3600
 
-spawn /usr/bin/java -jar /opt/OKMInstaller.jar
+spawn /usr/bin/java -jar /opt/OKMInstaller.jar -ov $env(OPENKM_VERSION)
 
 # Must come after spawn so the handlers bind to the installer, not to
 # expect's own stdin (which is a closed pipe during a docker build).

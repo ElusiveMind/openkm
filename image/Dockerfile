@@ -7,36 +7,44 @@
 #
 # Pick the database backend with the DATABASE build argument:
 #
-#   docker build . -t mbagnall/openkm:h2
-#   docker build . --build-arg DATABASE=mysql -t mbagnall/openkm:mysql
+#   docker build . -t mbagnall/openkm:mysql
+#   docker build . --build-arg DATABASE=postgresql -t mbagnall/openkm:postgresql
 #   docker push mbagnall/openkm:mysql
+#   docker buildx build --platform linux/amd64,linux/arm64 \
+#     --build-arg DATABASE=postgresql \
+#     --build-arg OPENKM_VERSION=7.0.3 \
+#     -t mbagnall/openkm:7.0.3-postgresql \
+#     --push .
 #
 # Build arguments
-#   DATABASE - The database selector. Options are:
-#     h2 - default, embedded database stored in the repository volume
-#     mysql
+#   OPENKM_VERSION - The OpenKM release the installer fetches (default: 7.0.3)
+#   DATABASE - The database selector. OpenKM 7.0 needs a database server;
+#   the embedded h2 option from the 6.3 images is gone. Options are:
+#     mysql - default
 #     mariadb
 #     oracle
 #     sqlserver
 #     postgresql
 #
-#   For everything except h2 the connection details are written into the
-#   image at build time by the installer:
+#   The connection details are written into the image at build time by
+#   the installer:
 #     DATABASE_HOST     - host name of the database server (default: db)
 #     DATABASE_NAME     - database name, or SID for oracle (default: okmdb)
 #     DATABASE_USER     - user to connect as (default: openkm)
 #     DATABASE_PASSWORD - password for that user (default: OpenKM77)
 #
-# The installer downloads OpenKM from update.openkm.com, so the build
-# needs network access.
+# The installer downloads OpenKM and Tomcat from update.openkm.com and adds
+# LibreOffice and friends with apt-get, so the build needs network access.
 #
 
 FROM ubuntu:24.04
 
-LABEL name="OpenKM Persistent"
+ARG OPENKM_VERSION=7.0.3
+
+LABEL name="OpenKM 7.0.3"
 LABEL maintainer="Michael R. Bagnall <hello@flyingflip.com>"
 LABEL vendor="FlyingFlip Studios, LLC."
-LABEL version="6.3.12"
+LABEL version="${OPENKM_VERSION}"
 
 # The package lists are kept on purpose: the OpenKM installer runs apt-get
 # itself to add libreoffice, imagemagick, xvfb and friends.
@@ -45,7 +53,7 @@ RUN apt-get -y update && \
   tesseract-ocr \
   tesseract-ocr-eng \
   tesseract-ocr-osd \
-  openjdk-8-jdk \
+  openjdk-11-jdk \
   expect \
   coreutils \
   unzip \
@@ -60,16 +68,17 @@ RUN useradd openkm
 
 #
 # Step 1: run the OpenKM installer against the selected database.
+# It installs Tomcat under /opt/tomcat-<version> and links /opt/tomcat to it.
 #
-ARG DATABASE=h2
+ARG DATABASE=mysql
 ARG DATABASE_HOST=db
 ARG DATABASE_NAME=okmdb
 ARG DATABASE_USER=openkm
 ARG DATABASE_PASSWORD=OpenKM77
 ENV DATABASE=${DATABASE}
 
-COPY OKMInstaller.jar setup.sh setup-expect-h2.exp setup-expect-server.exp /opt/
-RUN chmod +x /opt/setup.sh /opt/setup-expect-h2.exp /opt/setup-expect-server.exp && \
+COPY OKMInstaller.jar setup.sh setup-expect-server.exp /opt/
+RUN chmod +x /opt/setup.sh /opt/setup-expect-server.exp && \
   /opt/setup.sh
 
 #
@@ -77,9 +86,9 @@ RUN chmod +x /opt/setup.sh /opt/setup-expect-h2.exp /opt/setup-expect-server.exp
 #
 # keas.war bundles ICU4J 3.4.4 (pulled in by Jena/IRI for vocabulary
 # parsing). That ICU4J cannot parse a Java version whose update number is
-# above 255, and Ubuntu 24.04 ships Java 8u504, so KEA crashes at startup.
-# Swap in a current ICU4J from Maven Central while copying the war in. The
-# Normalizer and IDNA calls that Jena/IRI make are still present in it.
+# above 255, which broke KEA on Java 8u504. Swap in a current ICU4J from
+# Maven Central while copying the war in. The Normalizer and IDNA calls
+# that Jena/IRI make are still present in it.
 #
 ARG ICU4J_VERSION=74.2
 ARG ICU4J_SHA256=95c055080e14c093ebeeba5b733e1a1be7a4af5854668c774cedf070d4240e43
@@ -99,7 +108,7 @@ COPY keas.properties /root/keas.properties
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
-VOLUME ["/opt/tomcat-8.5.69/repository"]
+VOLUME ["/opt/tomcat/repository"]
 
 EXPOSE 8080
 
