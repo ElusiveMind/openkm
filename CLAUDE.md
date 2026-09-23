@@ -45,6 +45,8 @@ There is no longer a `docker run` + `docker commit` step and no separate `latest
 
 The connection details are baked into the image by the installer (Tomcat's `server.xml` datasource), so they cannot be changed at runtime without rebuilding.
 
+- `ICU4J_VERSION` / `ICU4J_SHA256` — The ICU4J release swapped into `keas.war` during the build (default 74.2, checksum pinned). See Key Details.
+
 ## Runtime Environment Variables
 
 - `OPEN_KM_URL` — Full OpenKM URL (default: `http://localhost:8080/OpenKM`)
@@ -56,3 +58,4 @@ The connection details are baked into the image by the installer (Tomcat's `serv
 - First-run detection in `image/run.sh` checks for `okmdb.mv.db` (h2) or `datastore/` dir; if found, it flips Hibernate from `create` to `none` mode
 - Default credentials: username `okmAdmin`, password `admin`
 - `run.sh` uses `envsubst` to render `keas.properties` with `OPEN_KM_URL` / `OPEN_KM_BASE_URL`
+- `keas.war` is patched during the build: its bundled ICU4J 3.4.4 (a Jena/IRI dependency) is replaced with a current ICU4J from Maven Central. The old ICU4J cannot parse a Java version with an update number above 255, and Ubuntu 24.04 ships Java 8u504, so without the swap KEA fails to start. The war checked into git is left unmodified; `md5sum.txt` describes that original.

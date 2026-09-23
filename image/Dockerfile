@@ -50,7 +50,9 @@ RUN apt-get -y update && \
   coreutils \
   unzip \
   vim \
-  gettext
+  gettext \
+  curl \
+  zip
 
 WORKDIR /opt
 
@@ -73,7 +75,25 @@ RUN chmod +x /opt/setup.sh /opt/setup-expect-h2.exp /opt/setup-expect-server.exp
 #
 # Step 2: add KEA and the runtime entrypoint.
 #
-COPY keas.war /root/keas.war
+# keas.war bundles ICU4J 3.4.4 (pulled in by Jena/IRI for vocabulary
+# parsing). That ICU4J cannot parse a Java version whose update number is
+# above 255, and Ubuntu 24.04 ships Java 8u504, so KEA crashes at startup.
+# Swap in a current ICU4J from Maven Central while copying the war in. The
+# Normalizer and IDNA calls that Jena/IRI make are still present in it.
+#
+ARG ICU4J_VERSION=74.2
+ARG ICU4J_SHA256=95c055080e14c093ebeeba5b733e1a1be7a4af5854668c774cedf070d4240e43
+
+RUN --mount=type=bind,source=keas.war,target=/tmp/keas.war \
+  cp /tmp/keas.war /root/keas.war && \
+  mkdir -p /tmp/icu/WEB-INF/lib && \
+  curl -fsSL -o /tmp/icu/WEB-INF/lib/icu4j-${ICU4J_VERSION}.jar \
+    "https://repo1.maven.org/maven2/com/ibm/icu/icu4j/${ICU4J_VERSION}/icu4j-${ICU4J_VERSION}.jar" && \
+  echo "${ICU4J_SHA256}  /tmp/icu/WEB-INF/lib/icu4j-${ICU4J_VERSION}.jar" | sha256sum -c - && \
+  zip -q -d /root/keas.war 'WEB-INF/lib/icu4j-3.4.4.jar' && \
+  cd /tmp/icu && zip -q -r /root/keas.war "WEB-INF/lib/icu4j-${ICU4J_VERSION}.jar" && \
+  rm -rf /tmp/icu
+
 COPY vocabulary-sample.zip /root/vocabulary-sample.zip
 COPY keas.properties /root/keas.properties
 COPY run.sh /run.sh
