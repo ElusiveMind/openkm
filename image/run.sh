@@ -1,35 +1,31 @@
 #!/bin/bash
+#
+# Runtime entrypoint. Deploys KEA next to OpenKM and starts Tomcat.
+#
 
-FILE="/opt/tomcat-8.5.69/repository/okmdb.mv.db"
-DB="/opt/tomcat-8.5.69/repository/datastore"
+TOMCAT=/opt/tomcat
 
-if [[ -f "$FILE" || -d "$DB" ]];
-then
-   echo "No setup required."
-   sed -i 's/hibernate.hbm2ddl=create/hibernate.hbm2ddl=none/g' /opt/tomcat-8.5.69/OpenKM.cfg
+# Existing data in the repository volume means the schema already exists,
+# so stop Hibernate from creating it again. OpenKM flips this setting to
+# "none" itself after a successful first start, but a fresh container from
+# the image still carries the original "create-only".
+if [[ -d "$TOMCAT/repository/datastore" ]]; then
+  echo "Existing repository found, skipping schema creation."
+  sed -i 's/^spring\.jpa\.hibernate\.ddl-auto=.*/spring.jpa.hibernate.ddl-auto=none/' "$TOMCAT/openkm.properties"
 else
-   echo "Begin setup."
+  echo "Empty repository, OpenKM will create its schema on this start."
 fi
 
-if [[ -n "${OPEN_KM_URL}" ]]; then
-  export OPEN_KM_URL="$OPEN_KM_URL"
-else
-  export OPEN_KM_URL="http://localhost:8080/OpenKM"
-fi
+export OPEN_KM_URL="${OPEN_KM_URL:-http://localhost:8080/openkm}"
+export OPEN_KM_BASE_URL="${OPEN_KM_BASE_URL:-http://localhost:8080}"
 
-if [[ -n "${OPEN_KM_BASE_URL}" ]]; then
-  export OPEN_KM_BASE_URL="$OPEN_KM_BASE_URL"
-else
-  export OPEN_KM_BASE_URL="http://localhost:8080"
-fi
-
-cp /root/keas.war /opt/tomcat-8.5.69/webapps/keas.war
-cp /root/vocabulary-sample.zip /opt/tomcat-8.5.69/vocabulary-sample.zip
-envsubst < /root/keas.properties > /opt/tomcat-8.5.69/keas.properties
-cd /opt/tomcat-8.5.69
+cp /root/keas.war "$TOMCAT/webapps/keas.war"
+cp /root/vocabulary-sample.zip "$TOMCAT/vocabulary-sample.zip"
+envsubst < /root/keas.properties > "$TOMCAT/keas.properties"
+cd "$TOMCAT"
 unzip -o vocabulary-sample.zip > /dev/null 2>&1
 
-cd /opt/tomcat-8.5.69/bin
-./startup.sh > /dev/null 2>&1
+"$TOMCAT/bin/startup.sh" > /dev/null 2>&1
 
-tail -f
+# Keep the container in the foreground and surface Tomcat's log.
+exec tail -F "$TOMCAT/logs/catalina.out"
