@@ -7,18 +7,14 @@
 # docker build . -t mbagnall/openkm:image
 # docker run mbagnall/openkm:image
 #
-# Environment Variable
-# DATABASE - The database selector. Options are:
-#   h2 - default
-#   mysql - Connection details to a MySQL server. Must define:
-#       DATABASE_HOST - the host name of the database
-#       DATABASE_NAME - the name of the database
-#       DATABASE_USER - the user to connect to the database
-#       DATABASE_PASS - the password for the user specified above.
-#   mariadb - Same as MySQL
-#   oracle
-#   sqlserver
-#   postgresql
+#   docker build . -t mbagnall/openkm:mysql
+#   docker build . --build-arg DATABASE=postgresql -t mbagnall/openkm:postgresql
+#   docker push mbagnall/openkm:mysql
+#   docker buildx build --platform linux/amd64,linux/arm64 \
+#     --build-arg DATABASE=mysql \
+#     --build-arg OPENKM_VERSION=6.3.13 \
+#     -t mbagnall/openkm:6.3.13-postgresql \
+#     --push .
 #
 # Example with tag:
 # docker run --env-file ./env.list mbagnall/openkm:image
@@ -33,8 +29,10 @@
 
 FROM ubuntu:24.04
 
-LABEL name="OpenKM Base Container"
-LABEL maintainer="Michael R. Bagnall <michael@bagnall.io>"
+ARG OPENKM_VERSION=6.3.13
+
+LABEL name="OpenKM"
+LABEL maintainer="Michael R. Bagnall <hello@flyingflip.com>"
 LABEL vendor="FlyingFlip Studios, LLC."
 LABEL version="6.3.12"
 
@@ -42,7 +40,7 @@ RUN apt-get -y update && \
   apt-get -q -y install\
   tesseract-ocr \
   tesseract-ocr-eng \
-  tesseract-ocr-osd \ 
+  tesseract-ocr-osd \
   openjdk-8-jdk \
   expect \
   coreutils \

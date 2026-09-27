@@ -38,10 +38,15 @@ There is a sample repository with information regarding setting up your install 
 
 ```yml
 services:
-  # Our base OpenKM service is at the localhost. If hosting these on a domain,
-  # change the "localhost:8080" to your domain and optionally change the ports.
-  # if you are using ingress as a proxy, then you can make the exposed port anything
-  # but it must map to 8080 on the container.
+  # OPEN_KM_URL is used by KEA, inside the container, to call OpenKM's REST
+  # API, so it always points at the container's own port 8080 and the
+  # installed context path (/openkm for OpenKM 7.0, /OpenKM for 6.3). Leave
+  # it out to let the image pick the right one.
+  #
+  # OPEN_KM_BASE_URL is the address browsers use to reach OpenKM; KEA allows
+  # it as a CORS origin. When hosting on a domain or behind a proxy, change
+  # this one to that domain. The published port can be anything, but it must
+  # map to port 8080 in the container.
   openkm:
     image: mbagnall/openkm:mysql
     container_name: openkm
