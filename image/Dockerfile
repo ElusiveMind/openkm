@@ -82,7 +82,18 @@ RUN chmod +x /opt/setup.sh /opt/setup-expect-server.exp && \
   /opt/setup.sh
 
 #
-# Step 2: add KEA and the runtime entrypoint.
+# Step 2: place the FlyingFlip Studios logo under the login box, linked to
+# https://www.flyingflip.com. brand-login.sh patches both login pages inside
+# the war the installer produced (the KCenter app shell and the classic
+# login_desktop.jsp) and adds the logo under img/. Remove this step to build
+# an unbranded login page.
+#
+COPY flyingflip.png login-logo.html login-logo.js brand-login.sh /opt/
+RUN chmod +x /opt/brand-login.sh && \
+  /opt/brand-login.sh
+
+#
+# Step 3: add KEA and the runtime entrypoint.
 #
 # keas.war bundles ICU4J 3.4.4 (pulled in by Jena/IRI for vocabulary
 # parsing). That ICU4J cannot parse a Java version whose update number is

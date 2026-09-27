@@ -119,6 +119,10 @@ To publish one tag that runs natively on both Intel and Apple Silicon hosts, bui
 docker buildx build --platform linux/amd64,linux/arm64 -t mbagnall/openkm:7.0.3-mysql --push .
 ```
 
+### Login Page Logo
+
+The login page shows "Docker image environment provided by" and the FlyingFlip Studios logo under the login box, with the logo linking to [flyingflip.com](https://www.flyingflip.com). OpenKM 7.0 has two login pages with the same look: the KCenter app at `/openkm/kcenter/login`, which `/openkm/` redirects to and which draws its login view in the browser, and the classic `/openkm/login` page used by the desktop and administration interfaces. The build brands both with `brand-login.sh`, which inlines a small script into `kcenter/index.html`, patches `login_desktop.jsp`, and adds the logo under `img/`, all inside the OpenKM war. To build an unbranded login page, remove that step from the Dockerfile.
+
 ---
 
 ### Support
