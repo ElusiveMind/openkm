@@ -33,10 +33,10 @@ Tags are named `<OpenKM version>-<database>`. Every tag below is built for `linu
 | `6.3.13-mysql`      | MySQL      |
 | `6.3.13-mariadb`    | MariaDB    |
 | `6.3.13-postgresql` | PostgreSQL |
-| `6.3.13-oracle`.    | Oracle     |
+| `6.3.13-oracle`     | Oracle     |
 | `6.3.13-sqlserver`  | SQL Server |
 
-The MySQL tags are the ones this documentation covers and the ones that are run and tested. The other flavors are built from the same Dockerfile with the `DATABASE` build argument and bring their own database server. Oracle and SQL Server images for 6.3.13 are not published; they can be built from the `6.x` branch as described below.
+The MySQL tags are the ones this documentation covers and the ones that are run and tested. The other flavors are built from the same Dockerfile with the `DATABASE` build argument and bring their own database server.
 
 ### Legacy tags
 
