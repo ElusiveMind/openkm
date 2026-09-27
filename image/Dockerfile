@@ -11,9 +11,9 @@
 #   docker build . --build-arg DATABASE=postgresql -t mbagnall/openkm:postgresql
 #   docker push mbagnall/openkm:mysql
 #   docker buildx build --platform linux/amd64,linux/arm64 \
-#     --build-arg DATABASE=postgresql \
+#     --build-arg DATABASE=mysql \
 #     --build-arg OPENKM_VERSION=7.0.3 \
-#     -t mbagnall/openkm:7.0.3-postgresql \
+#     -t mbagnall/openkm:7.0.3-mysql \
 #     --push .
 #
 # Build arguments

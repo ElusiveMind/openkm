@@ -37,4 +37,17 @@ if [[ ! -f /opt/tomcat/openkm.properties ]]; then
   exit 1
 fi
 
+# The 7.0 installer writes serverTimezone=CET into the MySQL JDBC URL (the
+# 6.3 template said UTC), while the JVM in this image and the mysql image
+# both run in UTC. OpenKM 7 keeps its datetimes in java.util.Calendar
+# fields, which Hibernate writes in the JVM's zone but reads back in the
+# driver's serverTimezone, so the mismatch shifts every stored time by the
+# CET offset (2h in summer). Preview tokens are valid for 60 seconds, so
+# they expire on arrival and the Preview tab reports "Missing PDF file".
+# Point the driver at the zone the database server actually runs in.
+if grep -q 'serverTimezone=' /opt/tomcat/openkm.properties; then
+  sed -i 's/\([?&]\)serverTimezone=[^&]*/\1serverTimezone=UTC/' /opt/tomcat/openkm.properties
+  echo "Datasource URL: $(grep '^spring\.datasource\.url=' /opt/tomcat/openkm.properties | cut -d= -f2-)"
+fi
+
 echo "OpenKM $OPENKM_VERSION installed with database backend: $DATABASE"
