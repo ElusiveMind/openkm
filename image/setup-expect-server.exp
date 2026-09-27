@@ -1,0 +1,47 @@
+#!/usr/bin/expect -f
+#
+# Drives OKMInstaller.jar for a database server: mysql, mariadb, oracle,
+# sqlserver or postgresql (the current installer offers nothing else, for
+# 6.3 or 7.0).
+#
+# Everything comes from the environment (exported by setup.sh):
+#   OPENKM_VERSION, DATABASE,
+#   DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD
+#
+
+# The installer downloads OpenKM and installs packages, so allow plenty
+# of time per prompt.
+set timeout 3600
+
+spawn /usr/bin/java -jar /opt/OKMInstaller.jar -ov $env(OPENKM_VERSION)
+
+# Must come after spawn so the handlers bind to the installer, not to
+# expect's own stdin (which is a closed pipe during a docker build).
+expect_after {
+    timeout { puts stderr "Timed out waiting for the OpenKM installer."; exit 1 }
+    eof     { puts stderr "The OpenKM installer exited unexpectedly."; exit 1 }
+}
+
+expect "Database"
+send -- "$env(DATABASE)\r"
+expect "Database host"
+send -- "$env(DATABASE_HOST)\r"
+expect "Database name"
+send -- "$env(DATABASE_NAME)\r"
+expect "Database user"
+send -- "$env(DATABASE_USER)\r"
+expect "Database password"
+send -- "$env(DATABASE_PASSWORD)\r"
+expect "Start install process?"
+send -- "y\r"
+
+# The installer exits on its own once the install finishes. Pass its
+# exit status through so a failed install fails the docker build.
+expect eof
+lassign [wait] pid spawnid os_error exit_code
+if {$os_error != 0} {
+    puts stderr "Could not determine the OpenKM installer exit status."
+    exit 1
+}
+puts "OpenKM installer exited with status $exit_code"
+exit $exit_code

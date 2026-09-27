@@ -31,8 +31,9 @@ fi
 # the local Tomcat port plus the installed context path: /OpenKM on 6.3,
 # /openkm on 7.0. OPEN_KM_BASE_URL is the address browsers use to reach
 # OpenKM; KEA allows it as a CORS origin, so it carries the published port
-# or domain.
-if [[ -d "$TOMCAT/webapps/OpenKM" ]]; then
+# or domain. Before the first start only the war exists; Tomcat unpacks it
+# into the directory on that start.
+if [[ -e "$TOMCAT/webapps/OpenKM.war" || -d "$TOMCAT/webapps/OpenKM" ]]; then
   OPENKM_CONTEXT=OpenKM
 else
   OPENKM_CONTEXT=openkm
