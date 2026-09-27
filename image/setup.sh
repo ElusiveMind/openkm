@@ -24,9 +24,6 @@ esac
 
 echo "Installing OpenKM $OPENKM_VERSION with database backend: $DATABASE"
 
-cd /opt
-/opt/setup-expect-server.exp
-
 # MySQL 8 authenticates with caching_sha2_password, which Connector/J can
 # only complete over TLS or through an RSA public key exchange. The 6.3
 # installer writes useSSL=false into the datasource URL, which rules out

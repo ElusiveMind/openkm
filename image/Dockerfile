@@ -13,7 +13,7 @@
 #   docker buildx build --platform linux/amd64,linux/arm64 \
 #     --build-arg DATABASE=mysql \
 #     --build-arg OPENKM_VERSION=6.3.13 \
-#     -t mbagnall/openkm:6.3.13-postgresql \
+#     -t mbagnall/openkm:6.3.13-mysql \
 #     --push .
 #
 # Example with tag:
@@ -34,7 +34,7 @@ ARG OPENKM_VERSION=6.3.13
 LABEL name="OpenKM"
 LABEL maintainer="Michael R. Bagnall <hello@flyingflip.com>"
 LABEL vendor="FlyingFlip Studios, LLC."
-LABEL version="6.3.12"
+LABEL version="${OPENKM_VERSION}"
 
 RUN apt-get -y update && \
   apt-get -q -y install\
